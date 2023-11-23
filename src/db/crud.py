@@ -2,10 +2,9 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from core import security
-from db import models
-from db import schemas
-from db.db_mock_tickets import db_tickets
+from src.core import security
+from src.db import schemas, models
+from src.db.db_mock_tickets import db_tickets
 
 
 def get_user(db: Session, user_email: str):

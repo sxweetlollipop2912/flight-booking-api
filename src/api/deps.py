@@ -7,11 +7,11 @@ from jose.exceptions import JWTError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from core import security
-from core.config import settings
-from db import crud, schemas
-from db import models
-from db.database import SessionLocal
+from src.core import security
+from src.core.config import settings
+from src.db import crud
+from src.db import schemas, models
+from src.db.database import SessionLocal
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_STR}/login/access-token"
