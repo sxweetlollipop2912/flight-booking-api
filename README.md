@@ -4,7 +4,7 @@
 This API supports the following operations:
 
 1. Get the list of all flight tickets for sale
-2. Get details of a single flight ticket 
+2. Get details of one single flight ticket 
 3. Login/register a user
 4. Add a flight ticket to cart
 5. Get the list of all tickets in cart
