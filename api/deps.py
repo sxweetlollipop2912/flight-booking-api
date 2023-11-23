@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 
 from core import security
 from core.config import settings
-from db import models
 from db import crud, schemas
+from db import models
 from db.database import SessionLocal
 
 reusable_oauth2 = OAuth2PasswordBearer(
@@ -29,6 +29,10 @@ def get_db() -> Generator:
 def get_current_user(
         db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> models.User:
+    """
+    Get current user from token.
+    Raise error if the token is not expired, and the user exists.
+    """
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]

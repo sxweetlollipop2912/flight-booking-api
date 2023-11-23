@@ -18,7 +18,6 @@ class Settings(BaseSettings):
         "http://localhost:4200",
         "http://localhost:3000",
         "http://localhost:8080",
-        "http://local.dockertoolbox.tiangolo.com"
     ]
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)

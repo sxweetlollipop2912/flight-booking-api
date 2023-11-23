@@ -1,28 +1,47 @@
-from typing import Any, List, Optional
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from api import deps
-from db import models
 from db import crud, schemas
+from db import models
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.CartItem])
-def read_items(
+@router.get("/history", response_model=List[schemas.CartItem])
+def read_history(
         db: Session = Depends(deps.get_db),
         skip: int = 0,
         limit: int = 100,
-        has_purchased: Optional[bool] = None,
         current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Retrieve items.
+    Retrieve history items.
+
+    Requires authentication.
     """
     items = crud.get_cart_items(
-        db=db, user_email=current_user.email, skip=skip, limit=limit, has_purchased=has_purchased
+        db=db, user_email=current_user.email, skip=skip, limit=limit, has_purchased=True
+    )
+    return items
+
+
+@router.get("/cart", response_model=List[schemas.CartItem])
+def read_cart(
+        db: Session = Depends(deps.get_db),
+        skip: int = 0,
+        limit: int = 100,
+        current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Retrieve cart items.
+
+    Requires authentication.
+    """
+    items = crud.get_cart_items(
+        db=db, user_email=current_user.email, skip=skip, limit=limit, has_purchased=False
     )
     return items
 
@@ -31,13 +50,15 @@ def read_items(
 def read_item(
         *,
         db: Session = Depends(deps.get_db),
-        item_id: int,
+        id: int,
         current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Get item by ID.
+    Get an item from cart or history by ID.
+
+    Requires authentication.
     """
-    item = crud.get_cart_item(db=db, item_id=item_id)
+    item = crud.get_cart_item(db=db, item_id=id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     if item.user.email != current_user.email:
@@ -53,7 +74,9 @@ def create_item(
         current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Create new item.
+    Add a new item to cart, or to history if has_purchased is True.
+
+    Requires authentication.
     """
     item = crud.create_cart_item(db=db, item=item_in, user_email=current_user.email)
     return item
@@ -68,7 +91,9 @@ def update_item(
         current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Update an item.
+    Move an item from cart to history if has_purchased is True, and vice versa.
+
+    Requires authentication.
     """
     item = crud.get_cart_item(db=db, item_id=item_id)
     if not item:

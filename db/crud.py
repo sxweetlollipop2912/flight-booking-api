@@ -39,7 +39,7 @@ def get_tickets(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_ticket(db: Session, ticket_id: int):
-    ticket = next((ticket for ticket in db_tickets if ticket.id == ticket_id), None)
+    ticket = next((ticket for ticket in db_tickets if ticket.get("id") == ticket_id), None)
     return models.Ticket(**ticket)
     # return db.query(models.Ticket).get(ticket_id)
 

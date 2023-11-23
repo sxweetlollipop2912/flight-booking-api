@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from api import deps
-from db import models
 from db import crud, schemas
+from db import models
 
 router = APIRouter()
 
@@ -18,6 +18,8 @@ def create_user(
 ) -> Any:
     """
     Create new user.
+
+    Requires authentication.
     """
     user = crud.get_user(db, user_email=user_in.email)
     if user:
@@ -35,5 +37,7 @@ def read_user_me(
 ) -> Any:
     """
     Get current user.
+
+    Requires authentication.
     """
     return current_user

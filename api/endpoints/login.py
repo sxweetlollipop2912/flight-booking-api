@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from api import deps
 from core import security
 from core.config import settings
-from db import models
 from db import crud, schemas
 
 router = APIRouter()
@@ -20,6 +19,11 @@ def login_access_token(
 ) -> Any:
     """
     OAuth2 compatible token login, get an access token for future requests
+
+    For convenience, if email does not exist, this endpoint will register a new user
+        with the provided email and password.
+
+    Note that "username" must be an email.
     """
     user = crud.authenticate_user(
         db, email=form_data.username, password=form_data.password
@@ -41,12 +45,3 @@ def login_access_token(
         ),
         "token_type": "bearer",
     }
-
-
-# TODO: Function for testing, maybe remove
-@router.post("/login/test-token", response_model=schemas.User)
-def test_token(current_user: models.User = Depends(deps.get_current_user)) -> Any:
-    """
-    Test access token
-    """
-    return current_user
